@@ -10,15 +10,15 @@ import org.springframework.context.annotation.Configuration;
 public class SwaggerConfig {
 
     @Bean
-    public OpenAPI customOpenAPI() {
+    public OpenAPI demoOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("API Categorías")
-                        .version("1.0.0")
-                        .description("API REST para gestión de categorías")
+                        .title("API Categorías - FAP")
+                        .version("v1.0.0")
+                        .description("API REST para gestión de categorías del sistema")
                         .contact(new Contact()
-                                .name("FAP - Sistema de Gestión")
-                                .email("soporte@fap.mil.pe")
-                                .url("https://fap.mil.pe")));
+                                .name("Ministerio de Defensa - Fuerza Aérea del Perú")
+                                .email("sistemas@fap.mil.pe")));
     }
 }
+
