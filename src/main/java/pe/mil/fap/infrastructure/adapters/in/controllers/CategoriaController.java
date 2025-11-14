@@ -31,79 +31,95 @@ public class CategoriaController {
     @GetMapping
     @Operation(summary = "Listar categorías", description = "Obtiene todas las categorías paginadas y ordenadas descendentemente por ID")
     @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "Categorías obtenidas exitosamente",
-            content = @Content(schema = @Schema(implementation = ResponseApi.class))),
-        @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+            @ApiResponse(responseCode = "200", description = "Categorías obtenidas exitosamente", content = @Content(schema = @Schema(implementation = ResponseApi.class))),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     public ResponseEntity<ResponseApi<Page<CategoriaResponseDTO>>> obtenerTodas(
-            @Parameter(description = "Parámetros de paginación (page, size, sort)")
-            Pageable pageable) {
+            @Parameter(description = "Parámetros de paginación (page, size, sort)") Pageable pageable) {
         return ResponseEntity.ok(ResponseApi.success(
-            categoriaService.obtenerTodas(pageable),
-            "Categorías obtenidas exitosamente"
-        ));
+                categoriaService.obtenerTodas(pageable),
+                "Categorías obtenidas exitosamente"));
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Obtener categoría por ID", description = "Obtiene una categoría específica por su identificador")
     @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "Categoría encontrada"),
-        @ApiResponse(responseCode = "400", description = "Categoría no encontrada"),
-        @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+            @ApiResponse(responseCode = "200", description = "Categoría encontrada"),
+            @ApiResponse(responseCode = "404", description = "Categoría no encontrada"),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     public ResponseEntity<ResponseApi<CategoriaResponseDTO>> obtenerPorId(
-            @Parameter(description = "ID de la categoría", required = true)
-            @PathVariable Long id) {
-        return ResponseEntity.ok(ResponseApi.success(
-            categoriaService.obtenerPorId(id),
-            "Categoría obtenida exitosamente"
-        ));
+            @Parameter(description = "ID de la categoría", required = true) @PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(ResponseApi.success(
+                    categoriaService.obtenerPorId(id),
+                    "Categoría obtenida exitosamente"));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ResponseApi.danger(e.getMessage()));
+        }
     }
 
     @PostMapping
     @Operation(summary = "Crear categoría", description = "Crea una nueva categoría con sigla y nombre únicos")
     @ApiResponses({
-        @ApiResponse(responseCode = "201", description = "Categoría creada exitosamente"),
-        @ApiResponse(responseCode = "400", description = "Datos inválidos o categoría duplicada"),
-        @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+            @ApiResponse(responseCode = "201", description = "Categoría creada exitosamente"),
+            @ApiResponse(responseCode = "400", description = "Datos inválidos o categoría duplicada"),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     public ResponseEntity<ResponseApi<CategoriaResponseDTO>> crear(
             @Valid @RequestBody CategoriaRequestDTO requestDTO) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ResponseApi.success(
-                    categoriaService.crear(requestDTO),
-                    "Categoría creada exitosamente"
-                ));
+        try {
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(ResponseApi.success(
+                            categoriaService.crear(requestDTO),
+                            "Categoría creada exitosamente"));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest()
+                    .body(ResponseApi.danger(e.getMessage()));
+        }
     }
 
     @PutMapping
     @Operation(summary = "Actualizar categoría", description = "Actualiza una categoría existente por ID")
     @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "Categoría actualizada exitosamente"),
-        @ApiResponse(responseCode = "400", description = "Datos inválidos o categoría no encontrada"),
-        @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+            @ApiResponse(responseCode = "200", description = "Categoría actualizada exitosamente"),
+            @ApiResponse(responseCode = "400", description = "Datos inválidos"),
+            @ApiResponse(responseCode = "404", description = "Categoría no encontrada"),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     public ResponseEntity<ResponseApi<CategoriaResponseDTO>> actualizar(
             @Valid @RequestBody CategoriaUpdateDTO updateDTO) {
-        return ResponseEntity.ok(ResponseApi.success(
-            categoriaService.actualizar(updateDTO),
-            "Categoría actualizada exitosamente"
-        ));
+        try {
+            return ResponseEntity.ok(ResponseApi.success(
+                    categoriaService.actualizar(updateDTO),
+                    "Categoría actualizada exitosamente"));
+        } catch (IllegalArgumentException e) {
+            if (e.getMessage().contains("no encontrada")) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(ResponseApi.danger(e.getMessage()));
+            }
+            return ResponseEntity.badRequest()
+                    .body(ResponseApi.danger(e.getMessage()));
+        }
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Eliminar categoría", description = "Elimina una categoría por su ID")
     @ApiResponses({
-        @ApiResponse(responseCode = "204", description = "Categoría eliminada exitosamente"),
-        @ApiResponse(responseCode = "400", description = "Categoría no encontrada"),
-        @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+            @ApiResponse(responseCode = "204", description = "Categoría eliminada exitosamente"),
+            @ApiResponse(responseCode = "404", description = "Categoría no encontrada"),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     public ResponseEntity<ResponseApi<Void>> eliminar(
-            @Parameter(description = "ID de la categoría a eliminar", required = true)
-            @PathVariable Long id) {
-        categoriaService.eliminar(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT)
-                .body(ResponseApi.success(null, "Categoría eliminada exitosamente"));
+            @Parameter(description = "ID de la categoría a eliminar", required = true) @PathVariable Long id) {
+        try {
+            categoriaService.eliminar(id);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                    .body(ResponseApi.success(null, "Categoría eliminada exitosamente"));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ResponseApi.danger(e.getMessage()));
+        }
     }
 }
-
