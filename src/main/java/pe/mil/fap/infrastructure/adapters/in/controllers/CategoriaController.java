@@ -50,14 +50,9 @@ public class CategoriaController {
     })
     public ResponseEntity<ResponseApi<CategoriaResponseDTO>> obtenerPorId(
             @Parameter(description = "ID de la categoría", required = true) @PathVariable Long id) {
-        try {
-            return ResponseEntity.ok(ResponseApi.success(
-                    categoriaService.obtenerPorId(id),
-                    "Categoría obtenida exitosamente"));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(ResponseApi.danger(e.getMessage()));
-        }
+        return ResponseEntity.ok(ResponseApi.success(
+                categoriaService.obtenerPorId(id),
+                "Categoría obtenida exitosamente"));
     }
 
     @PostMapping
@@ -69,15 +64,10 @@ public class CategoriaController {
     })
     public ResponseEntity<ResponseApi<CategoriaResponseDTO>> crear(
             @Valid @RequestBody CategoriaRequestDTO requestDTO) {
-        try {
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(ResponseApi.success(
-                            categoriaService.crear(requestDTO),
-                            "Categoría creada exitosamente"));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest()
-                    .body(ResponseApi.danger(e.getMessage()));
-        }
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ResponseApi.success(
+                        categoriaService.crear(requestDTO),
+                        "Categoría creada exitosamente"));
     }
 
     @PutMapping
@@ -90,18 +80,9 @@ public class CategoriaController {
     })
     public ResponseEntity<ResponseApi<CategoriaResponseDTO>> actualizar(
             @Valid @RequestBody CategoriaUpdateDTO updateDTO) {
-        try {
-            return ResponseEntity.ok(ResponseApi.success(
-                    categoriaService.actualizar(updateDTO),
-                    "Categoría actualizada exitosamente"));
-        } catch (IllegalArgumentException e) {
-            if (e.getMessage().contains("no encontrada")) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(ResponseApi.danger(e.getMessage()));
-            }
-            return ResponseEntity.badRequest()
-                    .body(ResponseApi.danger(e.getMessage()));
-        }
+        return ResponseEntity.ok(ResponseApi.success(
+                categoriaService.actualizar(updateDTO),
+                "Categoría actualizada exitosamente"));
     }
 
     @DeleteMapping("/{id}")
@@ -113,13 +94,8 @@ public class CategoriaController {
     })
     public ResponseEntity<ResponseApi<Void>> eliminar(
             @Parameter(description = "ID de la categoría a eliminar", required = true) @PathVariable Long id) {
-        try {
-            categoriaService.eliminar(id);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT)
-                    .body(ResponseApi.success(null, "Categoría eliminada exitosamente"));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(ResponseApi.danger(e.getMessage()));
-        }
+        categoriaService.eliminar(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                .body(ResponseApi.success(null, "Categoría eliminada exitosamente"));
     }
 }
