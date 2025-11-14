@@ -12,7 +12,6 @@ public class SwaggerConfig {
     @Bean
     public OpenAPI demoOpenAPI() {
         return new OpenAPI()
-            .openapi("3.0.0")
             .info(new Info()
                 .title("API Categorías - FAP")
                 .version("v1.0.0")
