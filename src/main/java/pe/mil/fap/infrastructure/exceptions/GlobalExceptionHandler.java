@@ -3,16 +3,16 @@ package pe.mil.fap.infrastructure.exceptions;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import pe.mil.fap.shared.responses.ResponseApi;
 import pe.mil.fap.shared.responses.ErrorResponse;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@ControllerAdvice
+@RestControllerAdvice(basePackages = "pe.mil.fap.infrastructure.adapters.in.controllers")
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -41,3 +41,4 @@ public class GlobalExceptionHandler {
                 .body(ResponseApi.danger("Error interno del servidor: " + ex.getMessage()));
     }
 }
+
