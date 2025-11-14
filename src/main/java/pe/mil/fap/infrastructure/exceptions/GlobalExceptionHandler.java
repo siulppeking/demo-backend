@@ -12,7 +12,7 @@ import pe.mil.fap.shared.responses.ErrorResponse;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@RestControllerAdvice
+@RestControllerAdvice(basePackages = "pe.mil.fap.infrastructure.adapters.in.controllers")
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
